@@ -95,6 +95,12 @@ curl -X GET "http://127.0.0.1:5000/api/classify-number?number=371"
 3. Enter URL: `http://127.0.0.1:5000/api/classify-number?number=371`
 4. Click **Send**
 
+## Deployed end point
+https://numbers-api-6n3m.onrender.com
+
+## Link to github Repository
+https://github.com/Pascal509/Numbers_API
+
 ## Contributing
 Contributions are welcome! Feel free to fork the repository and submit a pull request.
 
