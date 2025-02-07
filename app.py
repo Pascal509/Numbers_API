@@ -12,16 +12,27 @@ def is_prime(n):
     for i in range(2, int(n**0.5) + 1):
         if n % i == 0:
             return False
-        return True
+    return True
     
 def is_perfect(n):
     """Check if a number is a perfect number."""
-    return n == sum(i for i in range(1, n) if n % i == 0)
+    return sum(i for i in range(1, n) if n % i == 0) == n
 
 def is_armstrong(n):
     """Check if a number is a armstrong number."""
     digits = [int(digit) for digit in str(n)]
-    return sum(d ** len(digits) for d in digits) == n
+    power = len(digits)
+    return sum(d ** power for d in digits) == n
+
+# Function to fetch a fun fact from Numbers API
+def get_fun_fact(n):
+    try:
+        response = requests.get(f"http://numbersapi.com/{n}/math")
+        if response.status_code == 200:
+            return response.text
+        return "No fun fact available."
+    except:
+        return "No fun fact available."
 
 @app.route("/api/classify-number", methods=["GET"])
 def classify_number():
@@ -32,36 +43,25 @@ def classify_number():
         return jsonify({"number": number, "error": True}), 400
     
     num = int(number)
+
+    #Determine properties
     properties = []
 
-    if is_prime(num):
-        properties.append("prime")
-    if is_perfect(num):
-        properties.append("perfect")
     if is_armstrong(num):
         properties.append("armstrong")
+    properties.append("odd" if num % 2 != 0 else "even")
 
-    properties.append("even" if num % 2 == 0 else "odd")
-
-    digit_sum = sum(int(d) for d in str(num))
-
-    # Fetch fun fact from Numbers API
-    fun_fact = f"{num} is a unique number."
-    try:
-        response = requests.get(f"http://numbersapi.com/{num}")
-        if response.status_code == 200:
-            fun_fact = response.text
-    except requests.exceptions.RequestException:
-        pass  # Use default fun fact if API fails
-
-    return jsonify({
+    response = {
         "number": num,
         "is_prime": is_prime(num),
         "is_perfect": is_perfect(num),
         "properties": properties,
-        "digit_sum": digit_sum,
-        "fun_fact": fun_fact
-    })
+        "digit_sum": sum(int(digit) for digit in str(num)),
+        "fun_fact": get_fun_fact(num)
+    }
+
+    return jsonify(response), 200
+    
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
